@@ -2,8 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workshop Sarijan</title>
+    <!-- Menambahkan meta viewport yang benar untuk mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Workshop Sarijan - RAB Editor</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -11,7 +12,7 @@
             --primary-color: #0f172a; 
             --primary-hover: #1e293b;
             --accent-color: #2563eb; 
-            --wa-color: #25D366; /* Warna khas WhatsApp */
+            --wa-color: #25D366; 
             --bg-body: #f8fafc;
             --bg-card: #ffffff;
             --border-color: #cbd5e1;
@@ -26,59 +27,104 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
-            padding: 40px 20px;
+            /* Padding disesuaikan untuk mobile */
+            padding: 20px 10px;
             line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
         }
 
-        .container { max-width: 1100px; margin: 0 auto; }
+        .container { 
+            max-width: 1100px; 
+            margin: 0 auto; 
+            width: 100%;
+        }
 
-        /* Toolbar Atas */
+        /* Toolbar Atas - Responsif */
         .toolbar {
             background: var(--bg-card);
-            padding: 16px 24px;
+            padding: 16px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             display: flex;
-            gap: 12px;
+            gap: 8px;
             flex-wrap: wrap;
             align-items: center;
+            justify-content: center; /* Di tengah untuk mobile */
         }
 
-        .toolbar h2 { font-size: 16px; font-weight: 700; color: var(--text-dark); margin-right: auto; }
+        .toolbar h2 { 
+            font-size: 16px; 
+            font-weight: 700; 
+            color: var(--text-dark); 
+            width: 100%; /* Penuh di mobile */
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        /* Media query untuk layar besar */
+        @media (min-width: 768px) {
+            body { padding: 40px 20px; }
+            .toolbar { padding: 16px 24px; justify-content: flex-start; }
+            .toolbar h2 { width: auto; margin-right: auto; margin-bottom: 0; text-align: left; }
+        }
 
         .btn {
             background-color: white; color: var(--text-dark); border: 1px solid var(--border-color);
-            padding: 8px 16px; font-size: 13px; font-weight: 600; border-radius: 6px;
+            padding: 8px 12px; font-size: 13px; font-weight: 600; border-radius: 6px;
             cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;
+            flex: 1 1 auto; /* Memungkinkan tombol menyesuaikan ukuran di mobile */
+            justify-content: center;
+            white-space: nowrap;
         }
         .btn:hover { background-color: #f1f5f9; border-color: #94a3b8; }
         
         .btn-primary { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
         .btn-primary:hover { background-color: #1d4ed8; border-color: #1d4ed8; }
 
-        .btn-wa { background-color: var(--wa-color); color: white; border-color: var(--wa-color); }
+        .btn-wa { background-color: var(--wa-color); color: white; border-color: var(--wa-color); width: 100%; }
+        @media (min-width: 768px) { .btn-wa { width: auto; } }
         .btn-wa:hover { background-color: #1ebc5c; border-color: #1ebc5c; }
 
-        /* Lembar Dokumen RAB */
-        .rab-sheet {
-            background: var(--bg-card); padding: 50px; border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative;
+        /* Lembar Dokumen RAB - Responsif dengan overflow */
+        .rab-sheet-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            /* Memungkinkan scroll horizontal jika tabel terlalu lebar di HP */
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .rab-header { text-align: center; margin-bottom: 40px; border-bottom: 3px solid var(--primary-color); padding-bottom: 24px; }
-        .rab-header h1 { font-size: 24px; font-weight: 700; color: var(--text-dark); margin-bottom: 16px; }
+        .rab-sheet {
+            padding: 20px; 
+            position: relative;
+            /* Memberikan batas minimal lebar agar tabel tidak terlalu tertekan */
+            min-width: 800px; 
+        }
 
-        .meta-info-grid { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; max-width: 600px; margin: 0 auto; text-align: left; font-size: 14px; }
-        .meta-label { font-weight: 600; color: var(--text-dark); min-width: 100px; }
+        @media (min-width: 768px) {
+            .rab-sheet-container { overflow-x: visible; }
+            .rab-sheet { padding: 50px; min-width: auto; }
+        }
+
+        .rab-header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid var(--primary-color); padding-bottom: 20px; }
+        .rab-header h1 { font-size: 20px; font-weight: 700; color: var(--text-dark); margin-bottom: 16px; }
+        @media (min-width: 768px) { .rab-header h1 { font-size: 24px; } }
+
+        .meta-info-grid { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; max-width: 600px; margin: 0 auto; text-align: left; font-size: 13px; }
+        .meta-label { font-weight: 600; color: var(--text-dark); min-width: 90px; }
         .meta-value { border-bottom: 1px dashed var(--border-color); padding-bottom: 2px; outline: none; min-height: 24px; }
         .meta-value:focus { border-bottom-color: var(--accent-color); background-color: #eff6ff; }
         
         [contenteditable="true"]:empty:before { content: attr(data-placeholder); color: #94a3b8; font-style: italic; pointer-events: none; display: block; }
 
-        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 30px; }
-        th, td { border: 1px solid var(--border-color); padding: 10px 12px; vertical-align: middle; }
-        th { background-color: var(--bg-th); font-weight: 600; text-align: center; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 20px; }
+        @media (min-width: 768px) { table { font-size: 13px; } }
+        
+        th, td { border: 1px solid var(--border-color); padding: 8px; vertical-align: middle; }
+        th { background-color: var(--bg-th); font-weight: 600; text-align: center; font-size: 11px; }
+        @media (min-width: 768px) { th, td { padding: 10px 12px; } th { font-size: 12px; } }
 
         [contenteditable="true"] { outline: none; padding: 4px; border-radius: 4px; }
         [contenteditable="true"]:focus { background-color: #eff6ff; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); }
@@ -93,30 +139,34 @@
         .col-center { text-align: center; }
 
         .row-category { background-color: #f1f5f9; font-weight: 700; color: var(--primary-color); }
-        .row-grand-total { background-color: var(--primary-color); color: white; font-weight: 700; font-size: 14px; }
+        .row-grand-total { background-color: var(--primary-color); color: white; font-weight: 700; font-size: 13px; }
+        @media (min-width: 768px) { .row-grand-total { font-size: 14px; } }
         .row-grand-total td { border-color: var(--primary-color); }
 
-        .action-cell { text-align: center; width: 45px; }
-        .btn-row-del { background: none; border: none; color: #ef4444; cursor: pointer; opacity: 0.3; }
+        .action-cell { text-align: center; width: 40px; }
+        .btn-row-del { background: none; border: none; color: #ef4444; cursor: pointer; opacity: 0.5; padding: 5px; font-size: 16px;}
         tr:hover .btn-row-del { opacity: 1; }
 
-        .rab-footer { margin-top: 60px; display: flex; justify-content: flex-end; }
-        .signature-box { text-align: center; width: 250px; font-size: 14px; }
+        .rab-footer { margin-top: 40px; display: flex; justify-content: flex-end; }
+        .signature-box { text-align: center; width: 200px; font-size: 13px; }
+        @media (min-width: 768px) { .signature-box { width: 250px; font-size: 14px; } }
 
         /* Loader Overlay saat generate PDF */
         #loader {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.8); z-index: 9999; 
+            background: rgba(255,255,255,0.9); z-index: 9999; 
             justify-content: center; align-items: center; flex-direction: column;
         }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--wa-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* Aturan Cetak (Print & PDF Export) */
         @media print {
             body { background-color: white; padding: 0; }
             .container { max-width: 100%; }
             .toolbar, .no-print { display: none !important; }
-            .rab-sheet { padding: 0; box-shadow: none; }
+            .rab-sheet-container { box-shadow: none; overflow: visible; }
+            .rab-sheet { padding: 0; min-width: 100%; }
             th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .row-category { background-color: #e2e8f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .row-grand-total { background-color: #0f172a !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -128,12 +178,12 @@
 
     <div id="loader">
         <div class="spinner"></div>
-        <p style="margin-top: 15px; font-weight: 600; color: #333;">Menyiapkan Dokumen PDF...</p>
+        <p style="margin-top: 15px; font-weight: 600; color: #333;" id="loader-text">Menyiapkan Dokumen PDF...</p>
     </div>
 
     <div class="container">
         <div class="toolbar no-print">
-            <h2>RAB Editor</h2>
+            <h2>RAB Editor - Workshop Sarijan</h2>
             <button class="btn" onclick="addCategory()">+ Kategori</button>
             <button class="btn" onclick="addRow()">+ Baris Item</button>
             <button class="btn" onclick="addColumn()">📊 + Kolom</button>
@@ -146,68 +196,70 @@
             </button>
         </div>
 
-        <div class="rab-sheet" id="printArea">
-            <div class="rab-header">
-                <h1>Rencana Anggaran Biaya (RAB)</h1>
-                <div class="meta-info-grid">
-                    <div class="meta-label">PEKERJAAN</div>
-                    <div class="meta-value" contenteditable="true" data-placeholder="[Ketik Nama Pekerjaan]"></div>
-                    <div class="meta-label">LOKASI</div>
-                    <div class="meta-value" contenteditable="true" data-placeholder="[Ketik Lokasi]"></div>
-                    <div class="meta-label">TAHUN</div>
-                    <div class="meta-value" contenteditable="true" data-placeholder="[Ketik Tahun]"></div>
+        <div class="rab-sheet-container">
+            <div class="rab-sheet" id="printArea">
+                <div class="rab-header">
+                    <h1>Rencana Anggaran Biaya (RAB)</h1>
+                    <div class="meta-info-grid">
+                        <div class="meta-label">PEKERJAAN</div>
+                        <div class="meta-value" contenteditable="true" data-placeholder="[Ketik Nama Pekerjaan]"></div>
+                        <div class="meta-label">LOKASI</div>
+                        <div class="meta-value" contenteditable="true" data-placeholder="[Ketik Lokasi]"></div>
+                        <div class="meta-label">TAHUN</div>
+                        <div class="meta-value" contenteditable="true" data-placeholder="[Ketik Tahun]"></div>
+                    </div>
                 </div>
-            </div>
 
-            <table id="rabTable">
-                <thead>
-                    <tr id="headerRow">
-                        <th width="5%" class="col-center">NO</th>
-                        <th width="35%">JENIS PEKERJAAN</th>
-                        <th width="12%" class="col-center">VOLUME</th>
-                        <th width="8%" class="col-center">SAT</th>
-                        <th width="18%" class="col-number">HARGA SATUAN (Rp)</th>
-                        <th width="18%" class="col-number">JUMLAH (Rp)</th>
-                        <th class="th-actions no-print action-cell">AKSI</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr class="row-category" data-type="category">
-                        <td class="col-center" contenteditable="true">I</td>
-                        <td colspan="5" contenteditable="true">PEKERJAAN PERSIAPAN</td>
-                        <td class="no-print action-cell"><button class="btn-row-del" onclick="deleteRow(this)">❌</button></td>
-                    </tr>
-                    <tr class="row-item" data-type="item">
-                        <td class="col-center" contenteditable="true">1</td>
-                        <td contenteditable="true">Uitzet dan Pas. Bowplang</td>
-                        <td class="col-center" contenteditable="true" data-field="volume" oninput="calculateRow(this)">1.00</td>
-                        <td class="col-center">
-                            <select class="sat-dropdown">
-                                <option value="ls" selected>ls</option>
-                                <option value="m¹">m¹</option><option value="m²">m²</option><option value="m³">m³</option>
-                                <option value="bh">bh</option><option value="ttk">ttk</option><option value="unit">unit</option>
-                            </select>
-                        </td>
-                        <td class="col-number" contenteditable="true" data-field="harga" oninput="calculateRow(this)">448,000</td>
-                        <td class="col-number" data-field="jumlah">448,000</td>
-                        <td class="no-print action-cell"><button class="btn-row-del" onclick="deleteRow(this)">❌</button></td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr class="row-grand-total" id="grandTotalRow">
-                        <td colspan="5" style="text-align: right; padding: 12px;">JUMLAH TOTAL (Rp)</td>
-                        <td class="col-number" id="grandTotalCell">448,000</td>
-                        <td class="no-print action-cell"></td>
-                    </tr>
-                </tfoot>
-            </table>
+                <table id="rabTable">
+                    <thead>
+                        <tr id="headerRow">
+                            <th width="5%" class="col-center">NO</th>
+                            <th width="35%">JENIS PEKERJAAN</th>
+                            <th width="12%" class="col-center">VOLUME</th>
+                            <th width="8%" class="col-center">SAT</th>
+                            <th width="18%" class="col-number">HARGA SATUAN (Rp)</th>
+                            <th width="18%" class="col-number">JUMLAH (Rp)</th>
+                            <th class="th-actions no-print action-cell">AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr class="row-category" data-type="category">
+                            <td class="col-center" contenteditable="true">I</td>
+                            <td colspan="5" contenteditable="true">PEKERJAAN PERSIAPAN</td>
+                            <td class="no-print action-cell"><button class="btn-row-del" onclick="deleteRow(this)">❌</button></td>
+                        </tr>
+                        <tr class="row-item" data-type="item">
+                            <td class="col-center" contenteditable="true">1</td>
+                            <td contenteditable="true">Uitzet dan Pas. Bowplang</td>
+                            <td class="col-center" contenteditable="true" data-field="volume" onblur="formatCellNumber(this)" oninput="calculateRow(this)">1</td>
+                            <td class="col-center">
+                                <select class="sat-dropdown">
+                                    <option value="ls" selected>ls</option>
+                                    <option value="m¹">m¹</option><option value="m²">m²</option><option value="m³">m³</option>
+                                    <option value="bh">bh</option><option value="ttk">ttk</option><option value="unit">unit</option>
+                                </select>
+                            </td>
+                            <td class="col-number" contenteditable="true" data-field="harga" onblur="formatCellNumber(this)" oninput="calculateRow(this)">0</td>
+                            <td class="col-number" data-field="jumlah">0</td>
+                            <td class="no-print action-cell"><button class="btn-row-del" onclick="deleteRow(this)">❌</button></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="row-grand-total" id="grandTotalRow">
+                            <td colspan="5" style="text-align: right; padding: 12px;">JUMLAH TOTAL (Rp)</td>
+                            <td class="col-number" id="grandTotalCell">0</td>
+                            <td class="no-print action-cell"></td>
+                        </tr>
+                    </tfoot>
+                </table>
 
-            <div class="rab-footer">
-                <div class="signature-box">
-                    <p contenteditable="true" data-placeholder="[Kota, Tanggal]"></p>
-                    <p style="margin-bottom: 60px;" contenteditable="true">Dibuat Oleh,</p>
-                    <p style="font-weight: 700; text-decoration: underline;" contenteditable="true" data-placeholder="[Nama Anda]"></p>
-                    <p contenteditable="true">Estimator</p>
+                <div class="rab-footer">
+                    <div class="signature-box">
+                        <p contenteditable="true" data-placeholder="[Kota, Tanggal]"></p>
+                        <p style="margin-bottom: 60px;" contenteditable="true">Dibuat Oleh,</p>
+                        <p style="font-weight: 700; text-decoration: underline;" contenteditable="true" data-placeholder="[Nama Anda]"></p>
+                        <p contenteditable="true">Estimator</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -215,16 +267,34 @@
 
     <script>
         // Logika Excel-like
+        // Menghapus semua karakter non-digit dan titik desimal (kecuali koma sebagai pemisah ribuan sebelum parsing)
         function parseFormattedNumber(val) {
-            let clean = (val || "").replace(/,/g, '');
+            if (!val) return 0;
+            // Hapus semua koma, dan ubah string ke float
+            let clean = val.replace(/,/g, '');
             let parsed = parseFloat(clean);
             return isNaN(parsed) ? 0 : parsed;
         }
 
         function formatNumber(num) {
-            return num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+            // Gunakan locale id-ID agar default pemisah ribuannya adalah titik (bukan koma seperti format US)
+            // Namun, untuk kompatibilitas parsing yang lebih mudah di atas, kita format secara eksplisit
+            return new Intl.NumberFormat('en-US', { 
+                minimumFractionDigits: 0, 
+                maximumFractionDigits: 2 
+            }).format(num);
         }
 
+        // Fungsi khusus agar saat user selesai mengetik (blur) dan pindah kolom, 
+        // angka "170000" otomatis berubah menjadi "170,000"
+        function formatCellNumber(element) {
+            let val = parseFormattedNumber(element.innerText);
+            element.innerText = formatNumber(val);
+            calculateRow(element); // Panggil kalkulasi ulang untuk memastikan
+        }
+
+        // Saat user sedang mengetik (oninput), kita hanya menghitung, 
+        // format tampilan diterapkan saat user selesai (onblur) agar kursor tidak melompat.
         function calculateRow(element) {
             let row = element.closest('tr');
             let vol = parseFormattedNumber(row.querySelector('[data-field="volume"]')?.innerText);
@@ -253,7 +323,7 @@
             let html = `
                 <td class="col-center" contenteditable="true"></td>
                 <td contenteditable="true" data-placeholder="Nama Pekerjaan"></td>
-                <td class="col-center" contenteditable="true" data-field="volume" oninput="calculateRow(this)">0</td>
+                <td class="col-center" contenteditable="true" data-field="volume" onblur="formatCellNumber(this)" oninput="calculateRow(this)">0</td>
                 <td class="col-center">
                     <select class="sat-dropdown">
                         <option value="ls">ls</option><option value="m¹">m¹</option><option value="m²">m²</option>
@@ -261,7 +331,7 @@
                         <option value="unit">unit</option>
                     </select>
                 </td>
-                <td class="col-number" contenteditable="true" data-field="harga" oninput="calculateRow(this)">0</td>
+                <td class="col-number" contenteditable="true" data-field="harga" onblur="formatCellNumber(this)" oninput="calculateRow(this)">0</td>
                 <td class="col-number" data-field="jumlah">0</td>
             `;
             for (let i = 7; i < totalCols; i++) html += `<td contenteditable="true"></td>`;
@@ -308,70 +378,109 @@
             grandTotalRow.cells[0].setAttribute('colspan', (parseInt(grandTotalRow.cells[0].getAttribute('colspan')) || 5) + 1);
         }
 
-        // FUNGSI SHARE KE WHATSAPP DENGAN PDF GENERATOR
+        // --- FUNGSI SHARE KE WHATSAPP YANG DIPERBAIKI ---
         async function shareViaWhatsApp() {
             const loader = document.getElementById('loader');
-            loader.style.display = 'flex'; // Tampilkan layar loading
+            const loaderText = document.getElementById('loader-text');
+            loader.style.display = 'flex';
+            loaderText.innerText = "Menyiapkan Dokumen PDF...";
 
-            // Sembunyikan elemen yang tidak perlu dicetak (seperti tombol X dan kolom aksi)
+            // Sembunyikan elemen non-print
             const actionCells = document.querySelectorAll('.action-cell');
             actionCells.forEach(cell => cell.style.display = 'none');
             
-            // Ubah tampilan dropdown select menjadi teks sementara agar tercetak rapi
             const selects = document.querySelectorAll('select.sat-dropdown');
             selects.forEach(sel => { sel.style.appearance = 'none'; sel.style.border = 'none'; });
 
-            const element = document.getElementById('printArea');
+            // Paksa lebar area print agar tabel tidak menyusut saat digenerate PDF di HP
+            const printArea = document.getElementById('printArea');
+            const originalWidth = printArea.style.width;
+            printArea.style.width = '1000px'; 
             
-            // Konfigurasi konversi html ke pdf
+            // Konfigurasi html2pdf
             const opt = {
                 margin:       10,
-                filename:     'Laporan_RAB.pdf',
+                filename:     'Laporan_RAB_Sarijan.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
+                html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024 }, // Paksa render dengan lebar desktop
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             try {
-                // Membuat file blob PDF
-                const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
-                const file = new File([pdfBlob], "Laporan_RAB.pdf", { type: 'application/pdf' });
+                // Generate Blob PDF
+                const pdfBlob = await html2pdf().set(opt).from(printArea).output('blob');
+                const file = new File([pdfBlob], "Laporan_RAB_Sarijan.pdf", { type: 'application/pdf' });
 
-                // Kembalikan tampilan UI seperti semula
+                // Kembalikan UI seperti semula
+                printArea.style.width = originalWidth;
                 actionCells.forEach(cell => cell.style.display = '');
                 selects.forEach(sel => { sel.style.appearance = ''; });
-                loader.style.display = 'none';
 
-                // Cek apakah browser mendukung fitur share file (biasanya di HP)
+                loaderText.innerText = "Membuka WhatsApp...";
+
+                // --- DETEKSI PLATFORM & METODE SHARE ---
+                // Cek apakah browser mendukung Web Share API khusus FILE (Banyak browser HP mendukung ini)
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        title: 'Laporan RAB',
-                        text: 'Berikut adalah dokumen Rencana Anggaran Biaya (RAB) terbaru.',
-                        files: [file]
-                    });
+                    try {
+                        await navigator.share({
+                            title: 'Laporan RAB',
+                            text: 'Berikut adalah dokumen Rencana Anggaran Biaya (RAB).',
+                            files: [file]
+                        });
+                        loader.style.display = 'none';
+                    } catch (shareError) {
+                        console.log("Share dibatalkan atau gagal", shareError);
+                        fallbackDownloadAndShare(pdfBlob);
+                    }
                 } else {
-                    // Jika di Desktop (tidak support direct share file)
-                    alert("Aplikasi akan mengunduh dokumen RAB. Silakan lampirkan file yang terunduh ke WhatsApp Web yang akan terbuka otomatis.");
-                    
-                    // Trigger download paksa
-                    const url = URL.createObjectURL(pdfBlob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'Laporan_RAB.pdf';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-
-                    // Buka WhatsApp Web
-                    const textMessage = encodeURIComponent("Berikut adalah laporan Rencana Anggaran Biaya (RAB). (Saya akan melampirkan file PDF sesaat lagi)");
-                    window.open(`https://wa.me/?text=${textMessage}`, '_blank');
+                    // Fallback jika tidak support direct file sharing (termasuk Desktop dan beberapa browser HP lama)
+                    fallbackDownloadAndShare(pdfBlob);
                 }
             } catch (error) {
                 console.error("Gagal membuat PDF", error);
                 alert("Terjadi kesalahan saat memproses dokumen PDF.");
+                printArea.style.width = originalWidth;
                 actionCells.forEach(cell => cell.style.display = '');
                 loader.style.display = 'none';
+            }
+        }
+
+        // Fungsi Fallback: Download file, lalu arahkan ke WhatsApp
+        function fallbackDownloadAndShare(pdfBlob) {
+            const loader = document.getElementById('loader');
+            alert("Perangkat Anda tidak mendukung pembagian file secara langsung. 
+
+File PDF akan diunduh secara otomatis. Silakan lampirkan file yang terunduh tersebut ke aplikasi WhatsApp Anda.");
+            
+            // 1. Download File
+            const url = URL.createObjectURL(pdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Laporan_RAB_Sarijan.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            loader.style.display = 'none';
+
+            // 2. Buka WhatsApp (Buka App jika di HP, Web jika di Desktop)
+            const textMessage = encodeURIComponent("Berikut adalah laporan Rencana Anggaran Biaya (RAB). (Saya akan melampirkan file PDF sesaat lagi)");
+            
+            // Deteksi Mobile vs Desktop
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Membuka aplikasi WA di HP (wa.me atau intent)
+                window.location.href = `whatsapp://send?text=${textMessage}`;
+                
+                // Fallback jika gagal buka wa://send
+                setTimeout(() => {
+                    window.open(`https://wa.me/?text=${textMessage}`, '_blank');
+                }, 500);
+            } else {
+                // Membuka WA Web di Desktop
+                window.open(`https://web.whatsapp.com/send?text=${textMessage}`, '_blank');
             }
         }
 
