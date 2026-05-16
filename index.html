@@ -2,7 +2,6 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <!-- Menambahkan meta viewport yang benar untuk mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Workshop Sarijan - RAB Editor</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -27,7 +26,6 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
-            /* Padding disesuaikan untuk mobile */
             padding: 20px 10px;
             line-height: 1.5;
             -webkit-text-size-adjust: 100%;
@@ -39,7 +37,6 @@
             width: 100%;
         }
 
-        /* Toolbar Atas - Responsif */
         .toolbar {
             background: var(--bg-card);
             padding: 16px;
@@ -50,19 +47,18 @@
             gap: 8px;
             flex-wrap: wrap;
             align-items: center;
-            justify-content: center; /* Di tengah untuk mobile */
+            justify-content: center; 
         }
 
         .toolbar h2 { 
             font-size: 16px; 
             font-weight: 700; 
             color: var(--text-dark); 
-            width: 100%; /* Penuh di mobile */
+            width: 100%; 
             text-align: center;
             margin-bottom: 8px;
         }
 
-        /* Media query untuk layar besar */
         @media (min-width: 768px) {
             body { padding: 40px 20px; }
             .toolbar { padding: 16px 24px; justify-content: flex-start; }
@@ -73,7 +69,7 @@
             background-color: white; color: var(--text-dark); border: 1px solid var(--border-color);
             padding: 8px 12px; font-size: 13px; font-weight: 600; border-radius: 6px;
             cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;
-            flex: 1 1 auto; /* Memungkinkan tombol menyesuaikan ukuran di mobile */
+            flex: 1 1 auto; 
             justify-content: center;
             white-space: nowrap;
         }
@@ -86,12 +82,10 @@
         @media (min-width: 768px) { .btn-wa { width: auto; } }
         .btn-wa:hover { background-color: #1ebc5c; border-color: #1ebc5c; }
 
-        /* Lembar Dokumen RAB - Responsif dengan overflow */
         .rab-sheet-container {
             background: var(--bg-card);
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            /* Memungkinkan scroll horizontal jika tabel terlalu lebar di HP */
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
@@ -99,7 +93,6 @@
         .rab-sheet {
             padding: 20px; 
             position: relative;
-            /* Memberikan batas minimal lebar agar tabel tidak terlalu tertekan */
             min-width: 800px; 
         }
 
@@ -151,7 +144,6 @@
         .signature-box { text-align: center; width: 200px; font-size: 13px; }
         @media (min-width: 768px) { .signature-box { width: 250px; font-size: 14px; } }
 
-        /* Loader Overlay saat generate PDF */
         #loader {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255,255,255,0.9); z-index: 9999; 
@@ -160,7 +152,6 @@
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--wa-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Aturan Cetak (Print & PDF Export) */
         @media print {
             body { background-color: white; padding: 0; }
             .container { max-width: 100%; }
@@ -266,51 +257,64 @@
     </div>
 
     <script>
-        // Logika Excel-like
-        // Menghapus semua karakter non-digit dan titik desimal (kecuali koma sebagai pemisah ribuan sebelum parsing)
+        // FUNGSI MATEMATIKA YANG DIPERBAIKI KHUSUS UNTUK FORMAT RUPIAH (TITIK)
         function parseFormattedNumber(val) {
             if (!val) return 0;
-            // Hapus semua koma, dan ubah string ke float
-            let clean = val.replace(/,/g, '');
-            let parsed = parseFloat(clean);
+            let str = val.toString().trim();
+            
+            // Format Indonesia: titik (.) untuk ribuan, koma (,) untuk desimal
+            // 1. Hapus SEMUA titik karena itu hanya pemisah ribuan
+            str = str.replace(/\./g, '');
+            // 2. Ubah koma menjadi titik agar sistem komputer bisa menghitung desimalnya
+            str = str.replace(/,/g, '.');
+            // 3. Buang karakter aneh selain angka, titik desimal, atau minus
+            str = str.replace(/[^\d.-]/g, '');
+            
+            let parsed = parseFloat(str);
             return isNaN(parsed) ? 0 : parsed;
         }
 
         function formatNumber(num) {
-            // Gunakan locale id-ID agar default pemisah ribuannya adalah titik (bukan koma seperti format US)
-            // Namun, untuk kompatibilitas parsing yang lebih mudah di atas, kita format secara eksplisit
-            return new Intl.NumberFormat('en-US', { 
+            // Memaksa sistem mencetak dengan format Indonesia (misal: 170.000)
+            return new Intl.NumberFormat('id-ID', { 
                 minimumFractionDigits: 0, 
                 maximumFractionDigits: 2 
             }).format(num);
         }
 
-        // Fungsi khusus agar saat user selesai mengetik (blur) dan pindah kolom, 
-        // angka "170000" otomatis berubah menjadi "170,000"
         function formatCellNumber(element) {
             let val = parseFormattedNumber(element.innerText);
             element.innerText = formatNumber(val);
-            calculateRow(element); // Panggil kalkulasi ulang untuk memastikan
+            calculateRow(element); 
         }
 
-        // Saat user sedang mengetik (oninput), kita hanya menghitung, 
-        // format tampilan diterapkan saat user selesai (onblur) agar kursor tidak melompat.
         function calculateRow(element) {
             let row = element.closest('tr');
-            let vol = parseFormattedNumber(row.querySelector('[data-field="volume"]')?.innerText);
-            let harga = parseFormattedNumber(row.querySelector('[data-field="harga"]')?.innerText);
+            if (!row) return;
+
+            let volText = row.querySelector('[data-field="volume"]')?.innerText;
+            let hargaText = row.querySelector('[data-field="harga"]')?.innerText;
+            
+            let vol = parseFormattedNumber(volText);
+            let harga = parseFormattedNumber(hargaText);
             let jumlahEl = row.querySelector('[data-field="jumlah"]');
             
-            if (jumlahEl) jumlahEl.innerText = formatNumber(vol * harga);
+            if (jumlahEl) {
+                jumlahEl.innerText = formatNumber(vol * harga);
+            }
             calculateGrandTotal();
         }
 
         function calculateGrandTotal() {
             let total = 0;
             document.querySelectorAll('.row-item').forEach(row => {
-                total += parseFormattedNumber(row.querySelector('[data-field="jumlah"]')?.innerText);
+                let jText = row.querySelector('[data-field="jumlah"]')?.innerText;
+                total += parseFormattedNumber(jText);
             });
-            document.getElementById('grandTotalCell').innerText = formatNumber(total);
+            let grandEl = document.getElementById('grandTotalCell');
+            if(grandEl) {
+                grandEl.innerText = formatNumber(total);
+            }
         }
 
         // Fungsionalitas CRUD Tabel
@@ -378,48 +382,41 @@
             grandTotalRow.cells[0].setAttribute('colspan', (parseInt(grandTotalRow.cells[0].getAttribute('colspan')) || 5) + 1);
         }
 
-        // --- FUNGSI SHARE KE WHATSAPP YANG DIPERBAIKI ---
+        // --- FUNGSI SHARE KE WHATSAPP ---
         async function shareViaWhatsApp() {
             const loader = document.getElementById('loader');
             const loaderText = document.getElementById('loader-text');
             loader.style.display = 'flex';
             loaderText.innerText = "Menyiapkan Dokumen PDF...";
 
-            // Sembunyikan elemen non-print
             const actionCells = document.querySelectorAll('.action-cell');
             actionCells.forEach(cell => cell.style.display = 'none');
             
             const selects = document.querySelectorAll('select.sat-dropdown');
             selects.forEach(sel => { sel.style.appearance = 'none'; sel.style.border = 'none'; });
 
-            // Paksa lebar area print agar tabel tidak menyusut saat digenerate PDF di HP
             const printArea = document.getElementById('printArea');
             const originalWidth = printArea.style.width;
             printArea.style.width = '1000px'; 
             
-            // Konfigurasi html2pdf
             const opt = {
                 margin:       10,
                 filename:     'Laporan_RAB_Sarijan.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024 }, // Paksa render dengan lebar desktop
+                html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024 }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             try {
-                // Generate Blob PDF
                 const pdfBlob = await html2pdf().set(opt).from(printArea).output('blob');
                 const file = new File([pdfBlob], "Laporan_RAB_Sarijan.pdf", { type: 'application/pdf' });
 
-                // Kembalikan UI seperti semula
                 printArea.style.width = originalWidth;
                 actionCells.forEach(cell => cell.style.display = '');
                 selects.forEach(sel => { sel.style.appearance = ''; });
 
                 loaderText.innerText = "Membuka WhatsApp...";
 
-                // --- DETEKSI PLATFORM & METODE SHARE ---
-                // Cek apakah browser mendukung Web Share API khusus FILE (Banyak browser HP mendukung ini)
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     try {
                         await navigator.share({
@@ -433,7 +430,6 @@
                         fallbackDownloadAndShare(pdfBlob);
                     }
                 } else {
-                    // Fallback jika tidak support direct file sharing (termasuk Desktop dan beberapa browser HP lama)
                     fallbackDownloadAndShare(pdfBlob);
                 }
             } catch (error) {
@@ -445,14 +441,10 @@
             }
         }
 
-        // Fungsi Fallback: Download file, lalu arahkan ke WhatsApp
         function fallbackDownloadAndShare(pdfBlob) {
             const loader = document.getElementById('loader');
-            alert("Perangkat Anda tidak mendukung pembagian file secara langsung. 
-
-File PDF akan diunduh secara otomatis. Silakan lampirkan file yang terunduh tersebut ke aplikasi WhatsApp Anda.");
+            alert("Perangkat Anda tidak mendukung pembagian file secara langsung. \n\nFile PDF akan diunduh secara otomatis. Silakan lampirkan file yang terunduh tersebut ke aplikasi WhatsApp Anda.");
             
-            // 1. Download File
             const url = URL.createObjectURL(pdfBlob);
             const a = document.createElement('a');
             a.href = url;
@@ -464,22 +456,15 @@ File PDF akan diunduh secara otomatis. Silakan lampirkan file yang terunduh ters
 
             loader.style.display = 'none';
 
-            // 2. Buka WhatsApp (Buka App jika di HP, Web jika di Desktop)
             const textMessage = encodeURIComponent("Berikut adalah laporan Rencana Anggaran Biaya (RAB). (Saya akan melampirkan file PDF sesaat lagi)");
-            
-            // Deteksi Mobile vs Desktop
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
             if (isMobile) {
-                // Membuka aplikasi WA di HP (wa.me atau intent)
                 window.location.href = `whatsapp://send?text=${textMessage}`;
-                
-                // Fallback jika gagal buka wa://send
                 setTimeout(() => {
                     window.open(`https://wa.me/?text=${textMessage}`, '_blank');
                 }, 500);
             } else {
-                // Membuka WA Web di Desktop
                 window.open(`https://web.whatsapp.com/send?text=${textMessage}`, '_blank');
             }
         }
